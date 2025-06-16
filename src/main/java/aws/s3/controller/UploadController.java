@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+
 @RestController
 public class UploadController {
 
@@ -16,6 +18,14 @@ public class UploadController {
         String bucketName = "jiyas3bucket";
         String filePath = "logs/app.log";
         String keyName = "logs/app-" + System.currentTimeMillis() + ".log";
+
+        File file = new File(filePath);
+        if (!file.exists()) {
+            return "Log file does not exist: " + filePath;
+        }
+        if (file.isDirectory()) {
+            return "Expected a file but found a directory at: " + filePath;
+        }
 
         s3UploadService.uploadFile(bucketName, filePath, keyName);
         return "Upload initiated.";

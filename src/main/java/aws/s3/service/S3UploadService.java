@@ -24,6 +24,12 @@ public class S3UploadService {
     public void uploadFile(String bucketName, String filePath, String keyName) {
         try {
             Path path = Paths.get(filePath);
+
+            if (!path.toFile().exists() || path.toFile().isDirectory()) {
+                System.err.println("The file " + filePath + " does not exist or is a directory.");
+                return;
+            }
+
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(keyName)
@@ -35,4 +41,20 @@ public class S3UploadService {
             e.printStackTrace();
         }
     }
+
+
+//    public void uploadFile(String bucketName, String filePath, String keyName) {
+//        try {
+//            Path path = Paths.get(filePath);
+//            PutObjectRequest request = PutObjectRequest.builder()
+//                    .bucket(bucketName)
+//                    .key(keyName)
+//                    .build();
+//
+//            s3Client.putObject(request, RequestBody.fromFile(path));
+//            System.out.println("Uploaded file to S3: " + keyName);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
