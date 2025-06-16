@@ -2,7 +2,10 @@ package aws.s3.controller;
 
 import aws.s3.service.S3UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -29,5 +32,18 @@ public class UploadController {
 
         s3UploadService.uploadFile(bucketName, filePath, keyName);
         return "Upload initiated.";
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> downloadFile(@RequestParam String key) {
+        String bucketName = "jiyas3bucket";
+
+        byte[] fileData = s3UploadService.downloadFile(bucketName, key);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename(key).build());
+
+        return new ResponseEntity<>(fileData, headers, HttpStatus.OK);
     }
 }
